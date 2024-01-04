@@ -1,0 +1,18 @@
+
+
+@font-face {
+  font-family: 'Right Grotesk';
+  src: url('../src/assets/fonts/RightGrotesk-Medium.otf') format('opentype');
+      
+  font-weight: normal;
+  font-style: normal;
+}
+
+
+@font-face {
+  font-family: 'Geist';
+  src: url('../src//assets/fonts/Geist.otf') format('opentype');
+      
+  font-weight: normal;
+  font-style: normal;
+}
