@@ -4,7 +4,7 @@ import Navbar from './components/Navbar';
 import Home from './pages/Home';
 function App() {
   return (
-   <main className='w-full h-full'>
+   <main className='w-full h-full scroll-smooth'>
         <Navbar/>
         <Home/>
    </main>
