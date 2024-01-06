@@ -2,9 +2,11 @@ import React from 'react'
 import { Tsong } from '../types/types'
 import VinylRecord from "../assets/icons/VinylRecord.svg"
 import placeholder from "../assets/icons/placeholder.svg"
+
 interface HeaderProps {
   selectedSongs: Tsong[]|[]
 }
+
 export default function Header({selectedSongs}: HeaderProps) :JSX.Element {
   return (
     <div className='w-full px-[16px] md:px-[34px] lg:px-[64px] py-[24px]  bg-neutral-700   h-[332px] fixed top-16 z-40'>

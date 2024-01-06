@@ -14,24 +14,34 @@ export default function Home() {
     {id: 7, title: "Roses (feat. ROZES)", artiste:"The Chainsmokers", duration:3.31},
   
   ])
+
+
   const [selectedSongs, setSelectedSongs] = useState<Tsong[]>([    ])
-   
+  
+
   const addSelectedSong = (id: number) : void=> {
+  
+  // Find song by Id
     let song  = songs.find(song=> song.id === id)
    
    let selected = [...selectedSongs]
 
-   const hasBeenSelected =  selected.find(song=> song.id === id)
-   if (song && !hasBeenSelected && selected.length < 7) {
-     selected.push(song)
+   if (song) {
 
+     const hasBeenSelected =  selected.includes(song)
+     //Prevent double selection and exceeding max selection of 7
+     if( !hasBeenSelected && selected.length < 7) {
+        selected.push(song)
+   
+      }
+      setSelectedSongs(selected)
    }
-   setSelectedSongs(selected)
 
   
   }
 
   const removeSelectedSong  = (id: number): void => {
+    
     let selected = [...selectedSongs]
    
   setSelectedSongs(selected.filter(song=> song.id !== id))    
