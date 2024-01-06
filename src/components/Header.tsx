@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Tsong } from '../types/types'
 import VinylRecord from "../assets/icons/VinylRecord.svg"
 import placeholder from "../assets/icons/placeholder.svg"
@@ -8,6 +8,14 @@ interface HeaderProps {
 }
 
 export default function Header({selectedSongs}: HeaderProps) :JSX.Element {
+  const [date, setDate ] = useState({
+    day: new Date().getDay().toString().padStart(2, '0'),
+    month: (new Date().getMonth() + 1).toString().padStart(2, '0'),
+    year: new Date().getFullYear()
+  })
+
+
+ 
   return (
     <div className='w-full px-[16px] md:px-[34px] lg:px-[64px] py-[24px]  bg-neutral-700   h-[332px] fixed top-16 z-40'>
     <div className="w-[358px] text-stone-300 text-2xl font-medium font-rightGrotesk leading-none">
@@ -21,7 +29,7 @@ export default function Header({selectedSongs}: HeaderProps) :JSX.Element {
         <div className='p-[16px] md:px-[32px] md:py-[14px] bg-zinc-800 mt-[16px] md:mt-[24px] rounded-[20px] md:rounded-full  backdrop-blur-[200px] flex flex-col md:flex-row md:justify-between md:items-center'>
         <div>
         <div className="w-[284px] text-stone-300 text-2xl font-black font-['Inter'] leading-normal">today’s pick</div>
-        <div className=" text-white text-base font-medium font-inter leading-normal">01/01/2024</div>
+        <div className=" text-white text-base font-medium font-inter leading-normal">{date.day + `/`+ date.month + `/` + date.year}</div>
         </div>
         <div className='flex  justify-end'>
         <button className=" w-[220px]  px-[20px] py-[10px] bg-green-500 rounded-[30px] text-center text-neutral-900 text-base font-medium font-inter leading-normal">
