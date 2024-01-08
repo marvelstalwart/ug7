@@ -12,11 +12,12 @@ const spotifyApi = new SpotifyWebApi()
 
 
 interface HomeProps {
+  randomSongs: SpotifyApi.TrackObjectFull[] | null
   spotifyToken: string
   loggedIn: boolean
 }
 
-export default function Home({spotifyToken, loggedIn}: HomeProps) {
+export default function Home({spotifyToken, loggedIn, randomSongs}: HomeProps) {
   // const [songs, setSongs] = useState<Tsong[]>([
   //   {id: 1, title: "Lonely at the top", artiste:"Asake", duration:3.31},
   //   {id: 2,title: "Solo", artiste:"Myles Smith", duration:3.31},
@@ -27,17 +28,15 @@ export default function Home({spotifyToken, loggedIn}: HomeProps) {
   //   {id: 7, title: "Roses (feat. ROZES)", artiste:"The Chainsmokers", duration:3.31},
   
   // ])
-const [accessToken, setAccessToken] = useState<string|null>(null)
 
 
 
 
-const [randomSongs, setRandomSongs] = useState<SpotifyApi.TrackObjectFull[]| null>(null)
 
   const [selectedSongs, setSelectedSongs] = useState<SpotifyApi.TrackObjectFull[]>([    ])
   const [playing, setPlaying] = useState("")
 
-  const [isHidden, setIsHidden] = useState(false)
+ 
 
 
   const addSelectedSong = (id: string) : void=> {
@@ -69,29 +68,10 @@ const [randomSongs, setRandomSongs] = useState<SpotifyApi.TrackObjectFull[]| nul
 
   }
 
-  const getRandomSongs = async ()=> {
-    try {
-     const res = await spotifyApi.searchTracks("genre:rock", {limit: 7})
-     setRandomSongs(res.tracks.items)
+ 
 
-    }
+ 
 
-    catch(err) {
-      console.error ("Error fetching random songs: ", err)
-    }
-
- }
-
- useEffect(()=> {
-  if (loggedIn)
-   getRandomSongs()
- },[loggedIn])
-
-
- useEffect(()=> {
-  console.log(accessToken) 
-    console.log(randomSongs) 
- },[randomSongs])   
 
 
 
