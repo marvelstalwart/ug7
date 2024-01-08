@@ -58,24 +58,30 @@ const [randomSongs, setRandomSongs] = useState<SpotifyApi.TrackObjectFull[]| nul
   }
 
   const getRandomSongs = async ()=> {
-    spotifyApi.searchTracks("genre:rock", {limit: 7}).then((res)=> {
-       setRandomSongs(res.tracks.items)
-    })
+    try {
+     const res = await spotifyApi.searchTracks("genre:rock", {limit: 7})
+     setRandomSongs(res.tracks.items)
+
+    }
+    catch(err) {
+      console.error ("Error fetching random songs: ", err)
+    }
 
  }
 
  useEffect(()=> {
-  getRandomSongs()
-  const token = localStorage.getItem("token")
-  setAccessToken(token)
+   const token = localStorage.getItem("token")
+   setAccessToken(token)
+   getRandomSongs()
  },[])
 
 
  useEffect(()=> {
-  console.log(accessToken)
-    console.log(randomSongs)
- },[randomSongs]) 
- 
+  console.log(accessToken) 
+    console.log(randomSongs) 
+ },[randomSongs])   
+
+
   return ( 
     <main className='bg-zinc-800 min-h-screen'>
        <Header selectedSongs={selectedSongs}/>
@@ -84,8 +90,8 @@ const [randomSongs, setRandomSongs] = useState<SpotifyApi.TrackObjectFull[]| nul
                 randomSongs?.map((song,i)=>  <SongCard song={song} addSelectedSong={addSelectedSong} removeSelectedSong={ removeSelectedSong} selectedSongs={selectedSongs}  key={i} setPlaying={setPlaying}/>)
             }
         {accessToken && <SpotifyPlayer token={accessToken} uris={playing}/>}
-       </section>
-      <Footer/>
+       </section> 
+      <Footer/> 
 
         </main>
   )
