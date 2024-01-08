@@ -20,61 +20,65 @@ const getTokenfromUrl = ()=> {
 //   const user = await axios.get("http://localhost:8888/login")
 //   console.log(user)
 // }
+interface navbarProps {
+  user: SpotifyApi.CurrentUsersProfileResponse
+  loggedIn:boolean
+}
 
 
-export default function Navbar() {
-  const [spotifyToken, setSpotifyToken] = useState("");
-  const [loggedIn, setLoggedIn] = useState(false)
+export default function Navbar({user, loggedIn} : navbarProps) {
+ 
+
   const [isHidden, setIsHidden] = useState(false)
 
-  const [user, setUser] = useState<SpotifyApi.CurrentUsersProfileResponse>({
-    display_name:"",
-    external_urls:{
-      spotify: ""
-    },
-    followers: {href:"", total:0},
-    href:"",
-    id:"",
-    images:[],
-    type:"user",
-    uri:"",
-    birthdate: "",
-    country:"",
-    email:"",
-    product:""
+  // const [user, setUser] = useState<SpotifyApi.CurrentUsersProfileResponse>({
+  //   display_name:"",
+  //   external_urls:{
+  //     spotify: ""
+  //   },
+  //   followers: {href:"", total:0},
+  //   href:"",
+  //   id:"",
+  //   images:[],
+  //   type:"user",
+  //   uri:"",
+  //   birthdate: "",
+  //   country:"",
+  //   email:"",
+  //   product:""
 
-  })
+  // })
 
-  useEffect(()=> {
-        const token = getTokenfromUrl().access_token
-     if (token) {
-      localStorage.setItem("token", token)
+  // useEffect(()=> {
+  //       const token = getTokenfromUrl().access_token
+  //    if (token) {
+  //     localStorage.setItem("token", token)
 
-      setSpotifyToken(token)
-      setLoggedIn(true)
-     }
+  //     setSpotifyToken(token)
+  //     setLoggedIn(true)
+  //    }
 
     
-  },[])
+  // },[])
 
 
   
 
 
-  useEffect(()=> {
-    if (loggedIn) {
-        spotifyApi.setAccessToken(spotifyToken)
-        spotifyApi.getMe().then((user)=> {
+  // useEffect(()=> {
+  //   if (loggedIn) {
+  //       spotifyApi.setAccessToken(spotifyToken)
+  //       spotifyApi.getMe().then((user)=> {
          
-          return setUser(user)
+  //         return setUser(user)
          
-        })
+  //       })
   
       
 
       
-    }     
-  },[loggedIn])
+  //   }     
+  // },[loggedIn])
  
  
  
