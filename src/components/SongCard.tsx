@@ -17,7 +17,7 @@ interface SongCardProps {
   addSelectedSong: (id: string)=> void
   removeSelectedSong: (id: string)=> void
  setPlaying: React.Dispatch<React.SetStateAction<string>>
-}
+} 
 
 
 export default function SongCard({ addSelectedSong, selectedSongs, song, removeSelectedSong, setPlaying}: SongCardProps ): JSX.Element {

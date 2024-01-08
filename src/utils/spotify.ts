@@ -6,3 +6,4 @@ const scopes = ["streaming", "user-read-email", "user-read-private", "user-read-
 
 export const loginEndpoint = `${authEndpoint}client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join("%20")}&response_type=token&show_dialog=true`;
 
+ 
