@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react'
 import { Tsong } from '../types/types'
 import VinylRecord from "../assets/icons/VinylRecord.svg"
 import placeholder from "../assets/icons/placeholder.svg"
+import axios from "axios"
 
 interface HeaderProps {
-  selectedSongs: Tsong[]|[]
+  selectedSongs: SpotifyApi.TrackObjectFull[]|[]
 }
 
 export default function Header({selectedSongs}: HeaderProps) :JSX.Element {
@@ -14,10 +15,28 @@ export default function Header({selectedSongs}: HeaderProps) :JSX.Element {
     year: new Date().getFullYear()
   })
 
+  const [isHidden, setIsHidden]  = useState(false)
+  const handleScroll = () : void=> {
+    const scrollPosition = window.scrollY
+    setIsHidden(scrollPosition > 10)
+    
+}
+useEffect(()=> {
+  window.addEventListener('scroll', handleScroll)
+  return()=>
+  window.removeEventListener('scroll', handleScroll)
+},[])
 
+useEffect(()=> {
+    console.log( new Date().getDay())
+},[])
+
+  
  
   return (
-    <div className='w-full px-[16px] md:px-[34px] lg:px-[64px] py-[24px]  bg-neutral-700   h-[332px] fixed top-16 z-40'>
+    <div className='w-full px-[16px] md:px-[34px] lg:px-[64px] py-[24px]  bg-neutral-700   h-fit fixed top-16 z-40'>
+    
+    <div className={ `${isHidden ? 'max-h-0 overflow-hidden' :'max-h-[90px] '} overflow-hidden transition-max-height ease-in-out duration-500` }>
     <div className="w-[358px] text-stone-300 text-2xl font-medium font-rightGrotesk leading-none">
     daily pick of 7 great songs from undiscovered artistes curated by;
     </div>
@@ -26,6 +45,10 @@ export default function Header({selectedSongs}: HeaderProps) :JSX.Element {
         <img className="w-6 h-6 rounded-3xl border md:ml-[-4px] border-white border-opacity-10" src={placeholder} alt='displayPic'/>
         <img className="w-6 h-6 rounded-3xl border  md:ml-[-4px]  border-white border-opacity-10" src={placeholder} alt='displayPic'/>
         </div>
+    
+    </div>
+    
+    
         <div className='p-[16px] md:px-[32px] md:py-[14px] bg-zinc-800 mt-[16px] md:mt-[24px] rounded-[20px] md:rounded-full  backdrop-blur-[200px] flex flex-col md:flex-row md:justify-between md:items-center'>
         <div>
         <div className="w-[284px] text-stone-300 text-2xl font-black font-['Inter'] leading-normal">today’s pick</div>

@@ -2,7 +2,12 @@
 module.exports = {
   content: ["./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
-    extend: {},
+    extend: {
+        transitionProperty: {
+          'max-height': 'max-height'
+        }
+
+    },
     fontFamily: {
       fairDisplay: ['Playfair Display', 'serif'],
       inter: ['Inter', 'sans-serif'],
