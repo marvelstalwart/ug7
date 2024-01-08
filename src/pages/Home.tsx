@@ -9,7 +9,14 @@ import Footer from '../components/Footer'
 
 const spotifyApi = new SpotifyWebApi()
 
-export default function Home() {
+
+
+interface HomeProps {
+  spotifyToken: string
+  loggedIn: boolean
+}
+
+export default function Home({spotifyToken, loggedIn}: HomeProps) {
   // const [songs, setSongs] = useState<Tsong[]>([
   //   {id: 1, title: "Lonely at the top", artiste:"Asake", duration:3.31},
   //   {id: 2,title: "Solo", artiste:"Myles Smith", duration:3.31},
@@ -23,10 +30,15 @@ export default function Home() {
 const [accessToken, setAccessToken] = useState<string|null>(null)
 
 
+
+
 const [randomSongs, setRandomSongs] = useState<SpotifyApi.TrackObjectFull[]| null>(null)
 
   const [selectedSongs, setSelectedSongs] = useState<SpotifyApi.TrackObjectFull[]>([    ])
   const [playing, setPlaying] = useState("")
+
+  const [isHidden, setIsHidden] = useState(false)
+
 
   const addSelectedSong = (id: string) : void=> {
   
@@ -63,6 +75,7 @@ const [randomSongs, setRandomSongs] = useState<SpotifyApi.TrackObjectFull[]| nul
      setRandomSongs(res.tracks.items)
 
     }
+
     catch(err) {
       console.error ("Error fetching random songs: ", err)
     }
@@ -70,16 +83,17 @@ const [randomSongs, setRandomSongs] = useState<SpotifyApi.TrackObjectFull[]| nul
  }
 
  useEffect(()=> {
-   const token = localStorage.getItem("token")
-   setAccessToken(token)
+  if (loggedIn)
    getRandomSongs()
- },[])
+ },[loggedIn])
 
 
  useEffect(()=> {
   console.log(accessToken) 
     console.log(randomSongs) 
  },[randomSongs])   
+
+
 
 
   return ( 
@@ -89,7 +103,7 @@ const [randomSongs, setRandomSongs] = useState<SpotifyApi.TrackObjectFull[]| nul
             {
                 randomSongs?.map((song,i)=>  <SongCard song={song} addSelectedSong={addSelectedSong} removeSelectedSong={ removeSelectedSong} selectedSongs={selectedSongs}  key={i} setPlaying={setPlaying}/>)
             }
-        {accessToken && <SpotifyPlayer token={accessToken} uris={playing}/>}
+        {spotifyToken && <SpotifyPlayer token={spotifyToken} uris={playing}/>}
        </section> 
       <Footer/> 
 
