@@ -1,6 +1,7 @@
 import React, {useState, useEffect } from 'react'
 import { Tsong } from '../types/types'
 import SpotifyWebApi from 'spotify-web-api-js'
+import PauseIcon from "../../src/assets/icons/pause-icon.svg"
 import SpotifyWebPlayer, { SpotifyPlayer } from 'react-spotify-web-playback'
 import coverImg from "../assets/icons/cover-img.svg"
 import plusIcon from "../assets/icons/plus-icon.svg"
@@ -8,19 +9,22 @@ import minusIcon from "../assets/icons/minus-icon.svg"
 
 import playIcon from "../assets/icons/play-icon.svg"
 
-const spotifyApi = new SpotifyWebApi()
+
 
 interface SongCardProps {
  
-  selectedSongs: SpotifyApi.TrackObjectFull[]
-  song: SpotifyApi.TrackObjectFull
+  selectedSongs:  (SpotifyApi.TrackObjectFull | SpotifyApi.EpisodeObjectFull)[]
+  song: SpotifyApi.TrackObjectFull | SpotifyApi.EpisodeObjectFull | any
   addSelectedSong: (id: string)=> void
   removeSelectedSong: (id: string)=> void
- setPlaying: React.Dispatch<React.SetStateAction<string>>
+  NowPlaying: string
+  pauseAudio : (id: string, index: number)=> void
+changeSong: (songUri : string, index:number)=> void
+index: number
 } 
 
 
-export default function SongCard({ addSelectedSong, selectedSongs, song, removeSelectedSong, setPlaying}: SongCardProps ): JSX.Element {
+export default function SongCard({ addSelectedSong, selectedSongs, song, removeSelectedSong, changeSong, NowPlaying, pauseAudio, index}: SongCardProps ): JSX.Element {
   const [hasBeenSelected, setHasBeenSelected] = useState(false)
   const [accessToken, setAccessToken] = useState<string>("")
   const token = localStorage.getItem("token")
@@ -31,6 +35,12 @@ export default function SongCard({ addSelectedSong, selectedSongs, song, removeS
     }
 
   },[])
+
+
+useEffect(()=> {
+      console.log(song.preview_url === NowPlaying) 
+},[NowPlaying])
+
   useEffect(()=> {
     
     if (selectedSongs.includes(song)) {
@@ -50,15 +60,25 @@ export default function SongCard({ addSelectedSong, selectedSongs, song, removeS
     // <SpotifyWebPlayer token={accessToken} uris={song.uri}/>
 
     <div className='w-[358px] md:w-[560px] h-20 bg-neutral-900 rounded-[40px] p-[10px] flex items-center justify-between'>
+       <audio  id={song.id} src={song.preview_url}  >
+            
+            </audio>
             <div className='flex gap-[10px]'>
               <div className='min-w-[60px] min-h-[60px] max-w-[60px] max-h-[60px] rounded-[50%]   overflow-hidden  relative'>
-            <img className='absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] z-30 ' src={playIcon} alt='playIcon' onClick={()=>setPlaying(song.uri)}/>
-            <img className='blur-md  min-w-full min-h-full ' src={song.album.images[0].url} alt='pause'/>
+             {
+                  song.preview_url === NowPlaying ?
+                    <img className='absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] z-30 ' src={PauseIcon} alt='playIcon' onClick={()=> pauseAudio(song.id, index)}/>
+                        : 
+                    <img className='absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] z-30 ' src={playIcon} alt='playIcon' onClick={()=>changeSong(song.preview_url, index)}/>
 
+             } 
+           
+            <img className='blur-md  min-w-full min-h-full ' src={song.album.images[0].url} alt='pause'/>
+         
               </div>
             <div className='flex  flex-col gap-[4px]'>
             <div className=" text-white text-xl md:text-2xl font-black font-['Inter'] leading-tight text-nowrap flex flex-nowrap  max-w-[10rem] overflow-hidden">{song.name}</div>
-            <div className=" text-zinc-500 text-base font-medium font-['Inter'] leading-none">{song.artists[0].name}</div>
+            <div className=" text-zinc-500 text-base font-medium font-['Inter'] leading-none">{song?.artists.map((artist: any)=> (<span>{artist.name + " "}</span>))}</div>
 
             </div>
 
