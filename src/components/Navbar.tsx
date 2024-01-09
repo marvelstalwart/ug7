@@ -31,60 +31,22 @@ export default function Navbar({user, loggedIn} : navbarProps) {
 
   const [isHidden, setIsHidden] = useState(false)
 
-  // const [user, setUser] = useState<SpotifyApi.CurrentUsersProfileResponse>({
-  //   display_name:"",
-  //   external_urls:{
-  //     spotify: ""
-  //   },
-  //   followers: {href:"", total:0},
-  //   href:"",
-  //   id:"",
-  //   images:[],
-  //   type:"user",
-  //   uri:"",
-  //   birthdate: "",
-  //   country:"",
-  //   email:"",
-  //   product:""
-
-  // })
-
-  // useEffect(()=> {
-  //       const token = getTokenfromUrl().access_token
-  //    if (token) {
-  //     localStorage.setItem("token", token)
-
-  //     setSpotifyToken(token)
-  //     setLoggedIn(true)
-  //    }
-
+  const handleScroll = () : void=> {
+    const scrollPosition = window.scrollY
+    setIsHidden(scrollPosition > 10)
     
-  // },[])
+}
 
-
-  
-
-
-  // useEffect(()=> {
-  //   if (loggedIn) {
-  //       spotifyApi.setAccessToken(spotifyToken)
-  //       spotifyApi.getMe().then((user)=> {
-         
-  //         return setUser(user)
-         
-  //       })
-  
-      
-
-      
-  //   }     
-  // },[loggedIn])
- 
- 
+  useEffect(()=> {
+    window.addEventListener('scroll', handleScroll)
+    return()=>
+    window.removeEventListener('scroll', handleScroll)
+  },[])
  
   return (
 
-    <div className='w-screen top-0 bg-zinc-800 h-16 p-[16px] flex justify-between fixed z-40'>
+    <div className={` w-screen top-0 ${isHidden ? ' opacity-0 overflow-hidden' : 'max-h-16 overflow-hidden opacity-100'}  bg-zinc-800 transition-opacity duration-1000 p-[16px] flex justify-between fixed z-40`}>
+      
             <div className=' font-fairDisplay text-white'>u_grd7</div>
            
             <div className="w-fit h-fit px-2 py-1 rounded-[20px] border border-white border-opacity-20 items-center gap-2 flex">

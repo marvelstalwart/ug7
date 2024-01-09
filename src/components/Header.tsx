@@ -5,7 +5,7 @@ import placeholder from "../assets/icons/placeholder.svg"
 import axios from "axios"
 
 interface HeaderProps {
-  selectedSongs: SpotifyApi.TrackObjectFull[]|[]
+  selectedSongs: (SpotifyApi.TrackObjectFull | SpotifyApi.EpisodeObjectFull)[]|[]
 }
 
 export default function Header({selectedSongs}: HeaderProps) :JSX.Element {
@@ -34,7 +34,7 @@ useEffect(()=> {
   
  
   return (
-    <div className='w-full px-[16px] md:px-[34px] lg:px-[64px] py-[24px]  bg-neutral-700   h-fit fixed top-16 z-40'>
+    <div className={`w-full px-[16px] md:px-[34px] lg:px-[64px] py-[24px]  bg-neutral-700   h-fit fixed ${isHidden? '-translate-y-16' : 'translate-y-0'} top-16 transition-all duration-300 z-40`}>
     
     <div className={ `${isHidden ? 'max-h-0 overflow-hidden' :'max-h-[90px] '} overflow-hidden transition-max-height ease-in-out duration-500` }>
     <div className="w-[358px] text-stone-300 text-2xl font-medium font-rightGrotesk leading-none">

@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useRef} from 'react'
 import { Tsong } from '../types/types'
 import Header from '../components/Header'
 import SongCard from '../components/SongCard'
@@ -12,31 +12,27 @@ const spotifyApi = new SpotifyWebApi()
 
 
 interface HomeProps {
-  randomSongs: SpotifyApi.TrackObjectFull[] | null
+  randomSongs: (SpotifyApi.TrackObjectFull | SpotifyApi.EpisodeObjectFull)[] | null
   spotifyToken: string
   loggedIn: boolean
+  user: SpotifyApi.CurrentUsersProfileResponse
 }
 
-export default function Home({spotifyToken, loggedIn, randomSongs}: HomeProps) {
-  // const [songs, setSongs] = useState<Tsong[]>([
-  //   {id: 1, title: "Lonely at the top", artiste:"Asake", duration:3.31},
-  //   {id: 2,title: "Solo", artiste:"Myles Smith", duration:3.31},
-  //   {id:3,title: "Wasting Angels(feat. The Kid LAROI)", artiste:"Post Malone", duration:3.31},
-  //   {id: 4, title: "Wait(feat. A Boogie wit da Hoodie)", artiste:"Maroon 5", duration:3.31},
-  //   {id:5, title: "In Your Arms", artiste:"ILLENIUM", duration:3.31},
-  //   {id: 6,title: "California", artiste:"Boy In Space", duration:3.31},
-  //   {id: 7, title: "Roses (feat. ROZES)", artiste:"The Chainsmokers", duration:3.31},
+export default function Home({spotifyToken, loggedIn, randomSongs, user}: HomeProps) {
+
+
+
+
+
+
+  const [selectedSongs, setSelectedSongs] = useState<(SpotifyApi.TrackObjectFull | SpotifyApi.EpisodeObjectFull)[]>([    ])
+  const [NowPlaying, setNowPlaying] = useState("")
+  const audioRefs  : React.RefObject<HTMLAudioElement> =useRef<HTMLAudioElement>(null)
+  const [prevIndex, setPrevIndex ] = useState<number >(0)
+
   
-  // ])
 
 
-
-
-
-  const [selectedSongs, setSelectedSongs] = useState<SpotifyApi.TrackObjectFull[]>([    ])
-  const [playing, setPlaying] = useState("")
-
- 
 
 
   const addSelectedSong = (id: string) : void=> {
@@ -68,7 +64,61 @@ export default function Home({spotifyToken, loggedIn, randomSongs}: HomeProps) {
 
   }
 
- 
+
+const changeSong  = (songUri: string, nextIndex:number)=> {
+  console.log("hi")
+const nextSong = findCurrentAudioElement(audioRefs?.current?.children[nextIndex])
+const prevSong  =  findCurrentAudioElement(audioRefs?.current?.children[prevIndex])
+// console.log(audioElement)
+prevSong?.pause()
+nextSong?.play()
+
+if ( !nextSong?.paused) {
+  setPrevIndex(nextIndex)
+}
+  // if (!audioRef.current?.paused)  {
+  //   audioRef?.current?.pause()
+  // }
+
+  setNowPlaying(songUri)
+
+  // audioRef?.current?.play()
+  
+}
+
+const findCurrentAudioElement =  (element: Element| undefined) : HTMLAudioElement | null => {
+  
+  
+  if(!element )  {
+    return null;
+  }
+   // If the current element is an audio element, return it
+  if (element.tagName.toLowerCase()==='audio'){
+    return element as HTMLAudioElement
+  }
+    // If not, recursively search in the children
+ const children = element.children
+
+
+
+ for (let i = 0; i< children.length; i++) {
+  const audioElement = findCurrentAudioElement(children[i] as HTMLElement)
+if (audioElement) {
+  return audioElement
+}
+}
+ return null
+}
+
+
+const pauseAudio = (id: string, index: number)  :void=> {
+  const audioElement = findCurrentAudioElement(audioRefs?.current?.children[index])
+
+
+
+audioElement?.pause()
+
+}
 
  
 
@@ -76,14 +126,14 @@ export default function Home({spotifyToken, loggedIn, randomSongs}: HomeProps) {
 
 
 
-  return ( 
+  return (  
     <main className='bg-zinc-800 min-h-screen'>
        <Header selectedSongs={selectedSongs}/>
-       <section className=' gap-[20px] w-full mt-[24px] pt-[390px] flex flex-col items-center'>
+       <section ref={audioRefs} className=' gap-[20px] w-full  pt-[412px] flex flex-col items-center'>
             {
-                randomSongs?.map((song,i)=>  <SongCard song={song} addSelectedSong={addSelectedSong} removeSelectedSong={ removeSelectedSong} selectedSongs={selectedSongs}  key={i} setPlaying={setPlaying}/>)
+                randomSongs?.map((song,index)=>  <SongCard song={song} addSelectedSong={addSelectedSong} removeSelectedSong={ removeSelectedSong} selectedSongs={selectedSongs}  key={index} changeSong={changeSong} NowPlaying={NowPlaying} pauseAudio={pauseAudio} index={index} />)
             }
-        {spotifyToken && <SpotifyPlayer token={spotifyToken} uris={playing}/>}
+
        </section> 
       <Footer/> 
 

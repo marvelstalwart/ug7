@@ -18,7 +18,7 @@ const getTokenfromUrl = ()=> {
   },{})
 }
 function App() {
-  const [randomSongs, setRandomSongs] = useState<SpotifyApi.TrackObjectFull[]| null>(null)
+  const [randomSongs, setRandomSongs] = useState<(SpotifyApi.TrackObjectFull | SpotifyApi.EpisodeObjectFull)[]| any | null>(null)
   const [spotifyToken, setSpotifyToken] = useState("");
   const [loggedIn, setLoggedIn] = useState(false)
   const [user, setUser] = useState<SpotifyApi.CurrentUsersProfileResponse>({
@@ -40,19 +40,23 @@ function App() {
   })
 
   const getRandomSongs = async ()=> {
-    try {
-     const res = await spotifyApi.searchTracks("genre:rock", {limit: 7})
-     setRandomSongs(res.tracks.items)
+   
+      spotifyApi.getPlaylist("5O4C4Dmn0h7iABxLDCE4N6").then(function(res): void{
+       const tracks = res.tracks.items.map(item=> item.track)
+   
+         setRandomSongs(tracks)
+        
+   
+      }, function(err) : void{ 
+       console.error(err)
+      })
+
 
     }
 
-    catch(err) {
-      console.error ("Error fetching random songs: ", err)
-    }
-
- }
   
- // Get access token as sent from the URL hash
+
+  // Get access token as sent from the URL hash
  useEffect(()=> {
   const token = getTokenfromUrl().access_token
 if (token) {
@@ -60,9 +64,9 @@ localStorage.setItem("token", token)
 
 setSpotifyToken(token)
 setLoggedIn(true)
-}
-
-
+} 
+if (randomSongs)
+console.log(randomSongs)
 },[])
 
 
@@ -75,6 +79,8 @@ setLoggedIn(true)
           return setUser(user)
          
         })
+
+       
   
       
 
@@ -86,8 +92,8 @@ setLoggedIn(true)
 
   return (
    <main className='w-full h-full scroll-smooth'>
-        <Navbar loggedIn={loggedIn} user={user}/>
-        <Home spotifyToken={spotifyToken} loggedIn={loggedIn} randomSongs={randomSongs}/>
+        <Navbar  loggedIn={loggedIn} user={user}/>
+        <Home spotifyToken={spotifyToken} loggedIn={loggedIn} randomSongs={randomSongs} user={user}/>
    </main>
   )
 }
