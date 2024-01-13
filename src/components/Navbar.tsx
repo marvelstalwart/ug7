@@ -21,7 +21,7 @@ const getTokenfromUrl = ()=> {
 //   console.log(user)
 // }
 interface navbarProps {
-  user: SpotifyApi.CurrentUsersProfileResponse
+  user: SpotifyApi.CurrentUsersProfileResponse | null
   loggedIn:boolean
 }
 

@@ -5,6 +5,7 @@ import Home from './pages/Home';
 import axios from 'axios';
 import SpotifyWebApi from 'spotify-web-api-js'
 import { TDailySong } from './types/types';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
 const spotifyApi = new SpotifyWebApi()
 
 const getTokenfromUrl = ()=> {
@@ -22,25 +23,9 @@ function App() {
   const [dailySongs, setDailySongs] = useState<TDailySong[]|null>(null)
   const [spotifyToken, setSpotifyToken] = useState("");
   const [loggedIn, setLoggedIn] = useState(false)
-  const [user, setUser] = useState<SpotifyApi.CurrentUsersProfileResponse>({
-    display_name:"",
-    external_urls:{
-      spotify: ""
-    },
+  const [user, setUser] = useState<SpotifyApi.CurrentUsersProfileResponse | null>(null)
 
-    followers: {href:"", total:0},
-    href:"",
-    id:"",
-    images:[],
-    type:"user",
-    uri:"",
-    birthdate: "",
-    country:"",
-    email:"",
-    product:""
-
-  })
-
+  console.log(process.env) 
   const getRandomSongs = async ()=> {
    
       spotifyApi.getPlaylist("5O4C4Dmn0h7iABxLDCE4N6").then(function(res): void{
@@ -92,7 +77,9 @@ console.log(randomSongs)
   },[loggedIn])
 
 const getDailySongs= async ()=> {
-const res = await axios.get("http://localhost:1337/ug7/")
+  const isProd = process.env.NODE_ENV=== "production"
+  const host = "https://ug7-server.onrender.com"
+const res = await axios.get(`${isProd? host : "http://localhost:1337"}/ug7/`)
 console.log(res)
 setDailySongs(res.data)
    
@@ -117,8 +104,12 @@ setDailySongs(res.data)
 
   return (
    <main className='w-full h-full scroll-smooth'>
+    <Router>
         <Navbar  loggedIn={loggedIn} user={user}/>
         <Home spotifyToken={spotifyToken} loggedIn={loggedIn} randomSongs={randomSongs} dailySongs={dailySongs} user={user}/>
+
+
+    </Router>
    </main>
   )
 }
