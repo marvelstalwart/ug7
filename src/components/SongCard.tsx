@@ -59,7 +59,7 @@ useEffect(()=> {
    
     // <SpotifyWebPlayer token={accessToken} uris={song.uri}/>
 
-    <div className='w-[358px] md:w-[560px] h-20 bg-neutral-900 rounded-[40px] p-[10px] flex items-center justify-between'>
+    <div className='w-full md:w-[560px] h-20 bg-neutral-900 rounded-[40px] p-[10px] flex items-center justify-between'>
        <audio  id={song.id} src={song.preview_url}  >
             
             </audio>
