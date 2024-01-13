@@ -1,5 +1,5 @@
 import React, {useState, useEffect } from 'react'
-import { Tsong } from '../types/types'
+import { TDailySong } from '../types/types'
 import SpotifyWebApi from 'spotify-web-api-js'
 import PauseIcon from "../../src/assets/icons/pause-icon.svg"
 import SpotifyWebPlayer, { SpotifyPlayer } from 'react-spotify-web-playback'
@@ -13,7 +13,7 @@ import playIcon from "../assets/icons/play-icon.svg"
 
 interface SongCardProps {
  
-  selectedSongs:  (SpotifyApi.TrackObjectFull | SpotifyApi.EpisodeObjectFull)[]
+  selectedSongs:  (TDailySong)[]
   song: SpotifyApi.TrackObjectFull | SpotifyApi.EpisodeObjectFull | any
   addSelectedSong: (id: string)=> void
   removeSelectedSong: (id: string)=> void

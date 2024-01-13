@@ -7,3 +7,16 @@ export type Tsong = {
     
     
 }
+
+export type TDailySong = {
+    album:{}
+    artirts:[]
+    duration_ms: number
+    id: string
+    _id: string
+    name: string
+    preview_url: string
+    uri: string
+    __v: number
+    
+}

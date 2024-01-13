@@ -2,9 +2,9 @@ import React, {useState, useEffect} from 'react';
 import "./App.css"
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
-
+import axios from 'axios';
 import SpotifyWebApi from 'spotify-web-api-js'
-
+import { TDailySong } from './types/types';
 const spotifyApi = new SpotifyWebApi()
 
 const getTokenfromUrl = ()=> {
@@ -19,6 +19,7 @@ const getTokenfromUrl = ()=> {
 }
 function App() {
   const [randomSongs, setRandomSongs] = useState<(SpotifyApi.TrackObjectFull | SpotifyApi.EpisodeObjectFull)[]| any | null>(null)
+  const [dailySongs, setDailySongs] = useState<TDailySong[]|null>(null)
   const [spotifyToken, setSpotifyToken] = useState("");
   const [loggedIn, setLoggedIn] = useState(false)
   const [user, setUser] = useState<SpotifyApi.CurrentUsersProfileResponse>({
@@ -26,6 +27,7 @@ function App() {
     external_urls:{
       spotify: ""
     },
+
     followers: {href:"", total:0},
     href:"",
     id:"",
@@ -65,7 +67,7 @@ localStorage.setItem("token", token)
 setSpotifyToken(token)
 setLoggedIn(true)
 } 
-if (randomSongs)
+if (randomSongs)  
 console.log(randomSongs)
 },[])
 
@@ -75,6 +77,7 @@ console.log(randomSongs)
     if (loggedIn) {
         spotifyApi.setAccessToken(spotifyToken)
         spotifyApi.getMe().then((user)=> {
+         
          getRandomSongs()
           return setUser(user)
          
@@ -88,12 +91,34 @@ console.log(randomSongs)
     }     
   },[loggedIn])
 
+const getDailySongs= async ()=> {
+const res = await axios.get("http://localhost:1337/ug7/")
+console.log(res)
+setDailySongs(res.data)
+   
 
+   
+      
+}  
+
+
+// const uploadSongs = async () => {
+//   const res = await axios.post("http://localhost:1337/ug7/", randomSongs)
+//   return res
+// }
+    useEffect(()=> { 
+      // if (randomSongs){
+
+      //   uploadSongs()
+      // }
+          getDailySongs()
+         
+    },[randomSongs])
 
   return (
    <main className='w-full h-full scroll-smooth'>
         <Navbar  loggedIn={loggedIn} user={user}/>
-        <Home spotifyToken={spotifyToken} loggedIn={loggedIn} randomSongs={randomSongs} user={user}/>
+        <Home spotifyToken={spotifyToken} loggedIn={loggedIn} randomSongs={randomSongs} dailySongs={dailySongs} user={user}/>
    </main>
   )
 }
