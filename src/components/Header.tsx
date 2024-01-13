@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react'
-import { Tsong } from '../types/types'
+import { TDailySong } from '../types/types'
 import VinylRecord from "../assets/icons/VinylRecord.svg"
 import placeholder from "../assets/icons/placeholder.svg"
 import axios from "axios"
 
 interface HeaderProps {
-  selectedSongs: (SpotifyApi.TrackObjectFull | SpotifyApi.EpisodeObjectFull)[]|[]
+  dailySongs: (TDailySong)[]| null
+  selectedSongs: (TDailySong)[]|[]
+  addToPlaylist: (song: TDailySong[] | null)=> void
 }
 
-export default function Header({selectedSongs}: HeaderProps) :JSX.Element {
+export default function Header({selectedSongs,dailySongs, addToPlaylist}: HeaderProps) :JSX.Element {
   const [date, setDate ] = useState({
     day: new Date().getDay().toString().padStart(2, '0'),
     month: (new Date().getMonth() + 1).toString().padStart(2, '0'),
@@ -21,6 +23,7 @@ export default function Header({selectedSongs}: HeaderProps) :JSX.Element {
     setIsHidden(scrollPosition > 10)
     
 }
+
 useEffect(()=> {
   window.addEventListener('scroll', handleScroll)
   return()=>
@@ -55,23 +58,39 @@ useEffect(()=> {
         <div className=" text-white text-base font-medium font-inter leading-normal">{date.day + `/`+ date.month + `/` + date.year}</div>
         </div>
         <div className='flex  justify-end'>
-        <button className=" w-[220px]  px-[20px] py-[10px] bg-green-500 rounded-[30px] text-center text-neutral-900 text-base font-medium font-inter leading-normal">
-            add selection to spotify
+          {selectedSongs.length === 0?
+            <button onClick={()=>addToPlaylist(dailySongs)} className=" w-[220px]  px-[20px] py-[10px] bg-green-500 rounded-[30px] text-center text-neutral-900 text-base font-medium font-inter leading-normal" >
+           add all to spotify
             </button>
+              :
+              <button onClick={()=>addToPlaylist(selectedSongs)} className=" w-[220px]  px-[20px] py-[10px] bg-green-500 rounded-[30px] text-center text-neutral-900 text-base font-medium font-inter leading-normal" >
+              add selection to spotify
+              </button>
+            }
+      
 
         </div>
      
         </div>
         <div className='flex justify-end mt-[8px]'>
-           
+        {
+                   selectedSongs.length> 0 &&
             <div className="  px-[8px] py-1 rounded-[20px] border border-white border-opacity-20 items-center gap-1 inline-flex">
                
                 <img src={VinylRecord} alt='VinylRecord'/>
 
                
+           
+                 <div className="  text-center text-white text-base font-medium font-['Geist Mono'] leading-none">{
+                 
+                
+                 selectedSongs.length + ' of 7'
+                 
+                 }</div>
+
                
-                <div className="  text-center text-white text-base font-medium font-['Geist Mono'] leading-none">{selectedSongs.length + ' of 7'}</div>
                 </div>
+}
                
             </div>
 

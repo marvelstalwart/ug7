@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useRef} from 'react'
-import { Tsong } from '../types/types'
+import { TDailySong } from '../types/types'
 import Header from '../components/Header'
 import SongCard from '../components/SongCard'
 import SpotifyPlayer from 'react-spotify-web-playback'
@@ -12,21 +12,22 @@ const spotifyApi = new SpotifyWebApi()
 
 
 interface HomeProps {
+  dailySongs:TDailySong[] | null
   randomSongs: (SpotifyApi.TrackObjectFull | SpotifyApi.EpisodeObjectFull)[] | null
   spotifyToken: string
   loggedIn: boolean
   user: SpotifyApi.CurrentUsersProfileResponse
 }
 
-export default function Home({spotifyToken, loggedIn, randomSongs, user}: HomeProps) {
+export default function Home({spotifyToken, loggedIn, randomSongs, user, dailySongs}: HomeProps) {
 
 
 
+ 
 
 
-
-  const [selectedSongs, setSelectedSongs] = useState<(SpotifyApi.TrackObjectFull | SpotifyApi.EpisodeObjectFull)[]>([    ])
-  const [NowPlaying, setNowPlaying] = useState("")
+  const [selectedSongs, setSelectedSongs] = useState<TDailySong[]>([    ])
+  const [NowPlaying, setNowPlaying] = useState<string>("")
   const audioRefs  : React.RefObject<HTMLAudioElement> =useRef<HTMLAudioElement>(null)
   const [prevIndex, setPrevIndex ] = useState<number >(0)
 
@@ -36,9 +37,9 @@ export default function Home({spotifyToken, loggedIn, randomSongs, user}: HomePr
 
 
   const addSelectedSong = (id: string) : void=> {
-  
+  console.log("adding")
   // Find song by Id
-    let song  = randomSongs?.find(song=> song.id === id)
+    let song  = dailySongs?.find(song=> song.id === id)
    
    let selected = [...selectedSongs]
 
@@ -66,23 +67,20 @@ export default function Home({spotifyToken, loggedIn, randomSongs, user}: HomePr
 
 
 const changeSong  = (songUri: string, nextIndex:number)=> {
-  console.log("hi")
 const nextSong = findCurrentAudioElement(audioRefs?.current?.children[nextIndex])
 const prevSong  =  findCurrentAudioElement(audioRefs?.current?.children[prevIndex])
-// console.log(audioElement)
+
 prevSong?.pause()
 nextSong?.play()
 
 if ( !nextSong?.paused) {
   setPrevIndex(nextIndex)
 }
-  // if (!audioRef.current?.paused)  {
-  //   audioRef?.current?.pause()
-  // }
+ 
 
   setNowPlaying(songUri)
 
-  // audioRef?.current?.play()
+
   
 }
 
@@ -114,24 +112,41 @@ if (audioElement) {
 const pauseAudio = (id: string, index: number)  :void=> {
   const audioElement = findCurrentAudioElement(audioRefs?.current?.children[index])
 
-
+setNowPlaying("")
 
 audioElement?.pause()
 
 }
 
- 
+ console.log(dailySongs)
 
+const addToPlaylist= (songs: TDailySong[] | null) : void => {
+let trackUris =  songs?.map(song=> song.uri ) || []
 
+if (trackUris.length ===0){
+  console.error('No track URIs to add to the playlist.');
+  return;
+}
+
+  spotifyApi.createPlaylist(user.id,  {name: `ug7 + ${Date.now().toString()}}`, public: true})
+  .then((res : SpotifyApi.CreatePlaylistResponse)=> {
+      spotifyApi.addTracksToPlaylist(res.id, trackUris).then((res: SpotifyApi.AddTracksToPlaylistResponse)=> {
+            alert("Successfully added tracks to playlist")
+      }).catch((err)=> console.error("An error occured while adding tracks to playlist"))
+       
+  })
+  .catch((err)=> console.error("An error occured while creating playlist"))
+
+ }
 
 
 
   return (  
     <main className='bg-zinc-800 min-h-screen'>
-       <Header selectedSongs={selectedSongs}/>
+       <Header dailySongs={dailySongs} selectedSongs={selectedSongs} addToPlaylist={addToPlaylist}/>
        <section ref={audioRefs} className=' gap-[20px] w-full  pt-[412px] flex flex-col items-center'>
             {
-                randomSongs?.map((song,index)=>  <SongCard song={song} addSelectedSong={addSelectedSong} removeSelectedSong={ removeSelectedSong} selectedSongs={selectedSongs}  key={index} changeSong={changeSong} NowPlaying={NowPlaying} pauseAudio={pauseAudio} index={index} />)
+                dailySongs?.map((song: any,index: number) =>  <SongCard song={song} addSelectedSong={addSelectedSong} removeSelectedSong={ removeSelectedSong} selectedSongs={selectedSongs}  key={index} changeSong={changeSong} NowPlaying={NowPlaying} pauseAudio={pauseAudio} index={index} />)
             }
 
        </section> 
