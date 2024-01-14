@@ -150,7 +150,7 @@ spotifyApi.getUserPlaylists(user.id).then(async (res)=> {
         
         // Get a list of all the existing tracks in the playlist
         const existingPlaylistTracks  = await spotifyApi.getPlaylistTracks(playListExists.id)
-        // Get the track IDs
+        // Get the track URIs
         const existingTrackUris = existingPlaylistTracks.items.map((item) => item.track.uri);
         // Eliminate duplicate tracks
         uniqueTrackUris = trackUris.filter(uri=> !existingTrackUris.includes(uri))
@@ -200,7 +200,7 @@ spotifyApi.getUserPlaylists(user.id).then(async (res)=> {
 
 
   return (  
-    <main className='bg-zinc-800 min-h-screen'>
+    <main className='bg-zinc-800 min-h-screen '>
        <Header dailySongs={dailySongs} selectedSongs={selectedSongs} addToPlaylist={addToPlaylist}/>
        <section ref={audioRefs} className=' gap-[20px] w-full  pt-[412px] flex flex-col items-center px-[12px]'>
             {

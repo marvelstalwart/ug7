@@ -59,11 +59,11 @@ useEffect(()=> {
         </div>
         <div className='flex  justify-end'>
           {selectedSongs.length === 0?
-            <button onClick={()=>addToPlaylist(dailySongs)} className=" w-[220px]  px-[20px] py-[10px] bg-green-500 rounded-[30px] text-center text-neutral-900 text-base font-medium font-inter leading-normal" >
+            <button onClick={()=>addToPlaylist(dailySongs)} className=" w-[220px]  px-[20px] py-[10px] bg-green-500 rounded-[30px] text-center text-neutral-900 text-base font-medium font-inter leading-normal cursor-pointer" >
            add all to spotify
             </button>
               :
-              <button onClick={()=>addToPlaylist(selectedSongs)} className=" w-[220px]  px-[20px] py-[10px] bg-green-500 rounded-[30px] text-center text-neutral-900 text-base font-medium font-inter leading-normal" >
+              <button onClick={()=>addToPlaylist(selectedSongs)} className=" w-[220px]  px-[20px] py-[10px] bg-green-500 rounded-[30px] text-center text-neutral-900 text-base font-medium font-inter leading-normal cursor-pointer" >
               add selection to spotify
               </button>
             }
