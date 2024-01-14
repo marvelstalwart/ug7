@@ -5,7 +5,8 @@ import Home from './pages/Home';
 import axios from 'axios';
 import SpotifyWebApi from 'spotify-web-api-js'
 import { TDailySong } from './types/types';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Route,Routes } from 'react-router-dom';
+import Admin from './pages/Admin';
 const spotifyApi = new SpotifyWebApi()
 
 const getTokenfromUrl = ()=> {
@@ -18,7 +19,9 @@ const getTokenfromUrl = ()=> {
     return initial 
   },{})
 }
+
 function App() {
+
   const [randomSongs, setRandomSongs] = useState<(SpotifyApi.TrackObjectFull | SpotifyApi.EpisodeObjectFull)[]| any | null>(null)
   const [dailySongs, setDailySongs] = useState<TDailySong[]|null>(null)
   const [spotifyToken, setSpotifyToken] = useState("");
@@ -26,20 +29,21 @@ function App() {
   const [user, setUser] = useState<SpotifyApi.CurrentUsersProfileResponse | null>(null)
 
   console.log(process.env) 
-  const getRandomSongs = async ()=> {
+
+  // const getRandomSongs = async ()=> {
    
-      spotifyApi.getPlaylist("5O4C4Dmn0h7iABxLDCE4N6").then(function(res): void{
-       const tracks = res.tracks.items.map(item=> item.track)
+  //     spotifyApi.getPlaylist("5O4C4Dmn0h7iABxLDCE4N6").then(function(res): void{
+  //      const tracks = res.tracks.items.map(item=> item.track)
    
-         setRandomSongs(tracks)
+  //        setRandomSongs(tracks)
         
    
-      }, function(err) : void{ 
-       console.error(err)
-      })
+  //     }, function(err) : void{ 
+  //      console.error(err)
+  //     })
 
 
-    }
+  //   }
 
   
 
@@ -63,7 +67,7 @@ console.log(randomSongs)
         spotifyApi.setAccessToken(spotifyToken)
         spotifyApi.getMe().then((user)=> {
          
-         getRandomSongs()
+        //  getRandomSongs()
           return setUser(user)
          
         })
@@ -76,11 +80,13 @@ console.log(randomSongs)
     }     
   },[loggedIn])
 
+
 const getDailySongs= async ()=> {
+
   const isProd = process.env.NODE_ENV=== "production"
   const host = "https://ug7-server.onrender.com"
 const res = await axios.get(`${isProd? host : "http://localhost:1337"}/ug7/`)
-console.log(res)
+
 setDailySongs(res.data)
    
 
@@ -89,10 +95,7 @@ setDailySongs(res.data)
 }  
 
 
-// const uploadSongs = async () => {
-//   const res = await axios.post("http://localhost:1337/ug7/", randomSongs)
-//   return res
-// }
+
     useEffect(()=> { 
       // if (randomSongs){
 
@@ -103,11 +106,19 @@ setDailySongs(res.data)
     },[randomSongs])
 
   return (
-   <main className='w-full h-full scroll-smooth'>
+    <main className='w-full h-full scroll-smooth'>
+       <Navbar  loggedIn={loggedIn} user={user}/>
     <Router>
-        <Navbar  loggedIn={loggedIn} user={user}/>
-        <Home spotifyToken={spotifyToken} loggedIn={loggedIn} randomSongs={randomSongs} dailySongs={dailySongs} user={user}/>
+     <Routes>
 
+     
+
+          <Route  path='/'  element={<Home spotifyToken={spotifyToken} loggedIn={loggedIn} randomSongs={randomSongs} dailySongs={dailySongs} user={user}/>}/>
+
+          <Route path="/admin" element={<Admin user={user}/>}/>
+  
+
+      </Routes>
 
     </Router>
    </main>
