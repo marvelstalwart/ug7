@@ -116,7 +116,7 @@ setDailySongs(res.data)
           <Route  path='/'  element={<Home spotifyToken={spotifyToken} loggedIn={loggedIn} randomSongs={randomSongs} dailySongs={dailySongs} user={user}/>}/>
 
           <Route path="/admin" element={<Admin user={user}/>}/>
-  
+          <Route path="*" element={<Home spotifyToken={spotifyToken} loggedIn={loggedIn} randomSongs={randomSongs} dailySongs={dailySongs} user={user}/>} />
 
       </Routes>
 
