@@ -2,7 +2,7 @@ const authEndpoint = "https://accounts.spotify.com/authorize?";
 const clientId = "061be44bbce74086be13e8a17fa07196";
 const isProd = process.env.NODE_ENV=== "production"
 const host = "https://ug7.vercel.app"
-const redirectUri= `${isProd ? host : 'http://localhost:3000 '}/callback`;
+const redirectUri= `${isProd ? host : 'http://localhost:3000'}/callback`;
 
 const scopes = [ "user-read-email", "user-read-private", "playlist-modify-public", "playlist-modify-private", "playlist-read-private", "ugc-image-upload"]
 
