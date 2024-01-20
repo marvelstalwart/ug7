@@ -18,5 +18,6 @@ export type TDailySong = {
     preview_url: string
     uri: string
     __v: number
+    totalSaves: number
     
 }
