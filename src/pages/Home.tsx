@@ -133,7 +133,9 @@ const filterTracksByUri = (uris: string[])=> {
       }
 
 const updateDailySavesCount = async (trackIds: string[])=> {
-         await axios.post("http://localhost:1337/ug7/update",{songIds: trackIds})
+        const isProd = process.env.NODE_ENV === 'production'  
+        const host=    "https://ug7-server.onrender.com"
+         await axios.post(`${isProd ? host: 'http://localhost:1337'}/ug7/update,{songIds: trackIds}`)
 }
 
 const addToPlaylist=  async (songs: TDailySong[] | null) : Promise<void> => {
