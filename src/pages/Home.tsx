@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react'
+import React, {useState, useEffect, useRef, SetStateAction, Dispatch} from 'react'
 import { TDailySong } from '../types/types'
 import Header from '../components/Header'
 import SongCard from '../components/SongCard'
@@ -6,7 +6,12 @@ import SpotifyWebApi from 'spotify-web-api-js'
 import { useNavigate } from 'react-router-dom'
 import Footer from '../components/Footer'
 import { coverImg } from '../assets/img/cover'
+import WaveSurfer from 'wavesurfer.js'
 import { loginEndpoint } from '../utils/spotify'
+import useScroll from '../customHooks/useScroll'
+import Dialog from '../components/Dialog'
+import PageLoading from '../components/PageLoading'
+import axios from "axios"
 const spotifyApi = new SpotifyWebApi()
 
 
@@ -17,6 +22,7 @@ interface HomeProps {
   spotifyToken: string
   loggedIn: boolean
   user: SpotifyApi.CurrentUsersProfileResponse | null
+
 }
 
 export default function Home({spotifyToken, loggedIn, randomSongs, user, dailySongs}: HomeProps) {
@@ -30,12 +36,9 @@ export default function Home({spotifyToken, loggedIn, randomSongs, user, dailySo
   const [NowPlaying, setNowPlaying] = useState<string>("")
   const audioRefs  : React.RefObject<HTMLAudioElement> =useRef<HTMLAudioElement>(null)
   const [prevIndex, setPrevIndex ] = useState<number >(0)
-  let navigate = useNavigate()
-  
-
-
-
-
+  const [playlistId, setPlaylistId] = useState<string>("")
+  const [showDialog, setShowDialog] = useState<boolean>(false)
+  const[isLoading, setIsLoading] = useState<boolean>(false)
   const addSelectedSong = (id: string) : void=> {
   console.log("adding")
   // Find song by Id
@@ -67,6 +70,7 @@ export default function Home({spotifyToken, loggedIn, randomSongs, user, dailySo
 
 
 const changeSong  = (songUri: string, nextIndex:number)=> {
+ 
 const nextSong = findCurrentAudioElement(audioRefs?.current?.children[nextIndex])
 const prevSong  =  findCurrentAudioElement(audioRefs?.current?.children[prevIndex])
 
@@ -83,6 +87,8 @@ if ( !nextSong?.paused) {
 
   
 }
+
+
 
 const findCurrentAudioElement =  (element: Element| undefined) : HTMLAudioElement | null => {
   
@@ -120,8 +126,19 @@ audioElement?.pause()
 
  console.log(dailySongs)
 
+const filterTracksByUri = (uris: string[])=> {
+        const uniqueTrackIds =  dailySongs?.filter(song=> uris.includes(song.uri) ).map(song=> song._id)
+        
+        return uniqueTrackIds
+      }
+
+const updateDailySavesCount = async (trackIds: string[])=> {
+         await axios.post("http://localhost:1337/ug7/update",{songIds: trackIds})
+}
+
 const addToPlaylist=  async (songs: TDailySong[] | null) : Promise<void> => {
 // Sign in user if not authenticated
+setIsLoading(true)
 if (!user) {
   window.location.href = loginEndpoint
 }
@@ -156,12 +173,33 @@ spotifyApi.getUserPlaylists(user.id).then(async (res)=> {
         uniqueTrackUris = trackUris.filter(uri=> !existingTrackUris.includes(uri))
         
         spotifyApi.addTracksToPlaylist(playListExists.id, uniqueTrackUris)
-        .then((res)=> {
-         alert("Successfully updated Playlist!")
+        .then( async (res)=> {
+          // On successful add to the playlist
+            setShowDialog(true)
+            setIsLoading(false)
+        setPlaylistId(playListExists.id)
+        // Update the save count by sending the track ids to the database
+          const trackIds = filterTracksByUri(uniqueTrackUris)
+          if (trackIds){
+
+            try {
+              await updateDailySavesCount(trackIds)
+
+            }
+            catch(err) {
+              throw new Error ("An error occured while updating save count!")
+            }
+          }
+
+
         })
-        .catch(err=> console.error(err))
+        .catch(err=> {
+          setIsLoading(false)
+          console.error(err)
+        })
       }
       catch(err){
+        setIsLoading(false)
           console.error(err)
       }
    
@@ -177,37 +215,80 @@ spotifyApi.getUserPlaylists(user.id).then(async (res)=> {
          spotifyApi.createPlaylist(user.id,  {name: `underground7even`, public: true})
   .then((playlist : SpotifyApi.CreatePlaylistResponse)=> {
 
-      spotifyApi.addTracksToPlaylist(playlist.id, trackUris).then((res: SpotifyApi.AddTracksToPlaylistResponse)=> {
+      spotifyApi.addTracksToPlaylist(playlist.id, trackUris).then(async (res: SpotifyApi.AddTracksToPlaylistResponse)=> {
 
-        
+        setPlaylistId(playlist.id)
+        const trackIds = filterTracksByUri(trackUris)
+        if (trackIds){
+
+          try {
+            await updateDailySavesCount(trackIds)
+
+          }
+          catch(err) {
+            throw new Error ("An error occured while updating save count!")
+          }
+        }
+
         spotifyApi.uploadCustomPlaylistCoverImage(playlist.id, coverImg).then((res)=> {
-          alert("Successfully added tracks to playlist")
+          setShowDialog(true)
+          setIsLoading(false)
+          
+        }).catch(err=>{
 
-        }).catch(err=> console.error("An error occured while adding tracks to playlist and uploading custom data"))
+          setIsLoading(false)
+         console.error("An error occured while adding tracks to playlist and uploading custom data")
+        }
+         )
 
-      }).catch((err)=> console.error("An error occured while adding tracks to playlist"))
+      }).catch((err)=>
+      {
+        setIsLoading(false)
+      console.error("An error occured while adding tracks to playlist")
+  })
    
   })
-  .catch((err)=> console.error("An error occured while creating playlist"))
+  .catch((err)=> 
+  {
+    setIsLoading(false)
+    console.error("An error occured while creating playlist")
+  })
 
     }
 
 })
-.catch((err)=>console.error(err))
+.catch((err)=>{
+  setIsLoading(false)
+  console.error(err)}
+  )
 }
  }
 
-
+const closeDialog = ():void=> {
+  setShowDialog(false)
+}
+  
 
   return (  
-    <main className='bg-zinc-800 min-h-screen '>
-       <Header dailySongs={dailySongs} selectedSongs={selectedSongs} addToPlaylist={addToPlaylist}/>
-       <section ref={audioRefs} className=' gap-[20px] w-full  pt-[412px] flex flex-col items-center px-[12px]'>
+    <main className='bg-neutral-900 min-h-screen '>
+     <Dialog playlistId={playlistId} closeDialog={closeDialog} showDialog={showDialog}/>
+       <Header dailySongs={dailySongs} selectedSongs={selectedSongs} addToPlaylist={addToPlaylist} isLoading={isLoading}/>
+      
+     {
+
+      !dailySongs ? <PageLoading/>
+      :
+       <section ref={audioRefs} className='  w-full mt-[32px]  pt-[350px] flex flex-col gap-[10px] items-center px-[12px]'>
             {
                 dailySongs?.map((song: any,index: number) =>  <SongCard song={song} addSelectedSong={addSelectedSong} removeSelectedSong={ removeSelectedSong} selectedSongs={selectedSongs}  key={index} changeSong={changeSong} NowPlaying={NowPlaying} pauseAudio={pauseAudio} index={index} />)
             }
 
+
        </section> 
+
+     }
+
+       
       <Footer/> 
 
         </main>

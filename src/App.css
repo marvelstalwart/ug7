@@ -16,3 +16,34 @@
   font-weight: normal;
   font-style: normal;
 }
+
+body {
+  --tw-bg-opacity: 1;
+  background-color: rgb(23 23 23 / var(--tw-bg-opacity))
+}
+
+css
+Copy code
+
+/* Apply the animation to the sliding-text class */
+.sliding-text {
+  
+  animation: slide 10s linear infinite;
+}
+
+/* Define the keyframes for the sliding animation */
+@keyframes slide {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+/* Style the container to hide the overflow and maintain a fixed width */
+.slider-container {
+  overflow: hidden;
+  background-color: aqua;
+  width: 10rem; /* Set the width of the container to match the max-width of the text */
+}

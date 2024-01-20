@@ -7,6 +7,7 @@ import SpotifyWebApi from 'spotify-web-api-js'
 import { TDailySong } from './types/types';
 import { BrowserRouter as Router, Route,Routes } from 'react-router-dom';
 import Admin from './pages/Admin';
+
 const spotifyApi = new SpotifyWebApi()
 
 const getTokenfromUrl = ()=> {
@@ -25,27 +26,12 @@ function App() {
   const [randomSongs, setRandomSongs] = useState<(SpotifyApi.TrackObjectFull | SpotifyApi.EpisodeObjectFull)[]| any | null>(null)
   const [dailySongs, setDailySongs] = useState<TDailySong[]|null>(null)
   const [spotifyToken, setSpotifyToken] = useState("");
+  const[showDisconnect, setShowDisconnect] = useState<boolean>(false)
   const [loggedIn, setLoggedIn] = useState(false)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   const [user, setUser] = useState<SpotifyApi.CurrentUsersProfileResponse | null>(null)
 
-  console.log(process.env) 
 
-  // const getRandomSongs = async ()=> {
-   
-  //     spotifyApi.getPlaylist("5O4C4Dmn0h7iABxLDCE4N6").then(function(res): void{
-  //      const tracks = res.tracks.items.map(item=> item.track)
-   
-  //        setRandomSongs(tracks)
-        
-   
-  //     }, function(err) : void{ 
-  //      console.error(err)
-  //     })
-
-
-  //   }
-
-  
 
   // Get access token as sent from the URL hash
  useEffect(()=> {
@@ -94,29 +80,46 @@ setDailySongs(res.data)
       
 }  
 
+const toggleDisconnect = ()=> {
+      setShowDisconnect(!showDisconnect)
+}
 
+const disconnect = async ()=> {
+  spotifyApi.setAccessToken(null)
+  localStorage.removeItem("token")
+  setUser(null)
+  setLoggedIn(false)
+  setShowDisconnect(false)
+}
 
     useEffect(()=> { 
-      // if (randomSongs){
-
-      //   uploadSongs()
-      // }
+   
           getDailySongs()
          
     },[randomSongs])
 
   return (
-    <main className='w-full h-full scroll-smooth'>
-       <Navbar  loggedIn={loggedIn} user={user}/>
+    <main className='w-full h-full bg-neutral-900 scroll-smooth '>
+       <Navbar toggleDisconnect={toggleDisconnect} loggedIn={loggedIn} user={user} showDisconnect={showDisconnect}/>
+       
+       {showDisconnect ?
+         <button onClick={disconnect} className='absolute right-3 top-14 z-50 w-44 h-fit p-2 bg-stone-900 rounded border border-white border-opacity-10'>
+         <div className=' px-2 py-3 bg-zinc-800 rounded-sm text-white text-base font-medium font-inter leading-normal'>disconnect</div>
+       </button>
+        :
+      null
+      }
+      
+
     <Router>
      <Routes>
 
      
 
-          <Route  path='/'  element={<Home spotifyToken={spotifyToken} loggedIn={loggedIn} randomSongs={randomSongs} dailySongs={dailySongs} user={user}/>}/>
+          <Route  path='/'  element={<Home    spotifyToken={spotifyToken} loggedIn={loggedIn} randomSongs={randomSongs} dailySongs={dailySongs} user={user}/>}/>
 
           {/* <Route path="/admin" element={<Admin user={user}/>}/> */}
-          <Route path="*" element={<Home spotifyToken={spotifyToken} loggedIn={loggedIn} randomSongs={randomSongs} dailySongs={dailySongs} user={user}/>} />
+          <Route path="*" element={<Home  spotifyToken={spotifyToken} loggedIn={loggedIn} randomSongs={randomSongs} dailySongs={dailySongs} user={user}/>} />
 
       </Routes>
 
