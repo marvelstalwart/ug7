@@ -5,7 +5,9 @@ import placeholder from "../assets/icons/placeholder.svg"
 import useScroll from '../customHooks/useScroll'
 import XCircle from "../assets/icons/XCircle.svg"
 import axios from "axios"
-
+import dp1 from "../assets/img/dp1.jpg"
+import dp2 from "../assets/img/dp2.jpg"
+import dp3 from "../assets/img/dp3.jpg"
 import { Link } from 'react-router-dom'
 import Dialog from './Dialog'
 import Loading from './Loading'
@@ -41,9 +43,20 @@ const {isHidden, setIsHidden} = useScroll()
         7 daily gems, unheard & uncut. curated by;
     </div>
     <div className=" px-[16px] md:px-[64px] w-16 md:w-48 h-6 justify-start items-start inline-flex pt-[12px] gap-[8px] md:gap-2">
-        <img className="w-8 h-8 rounded-3xl border  border-white border-opacity-10" src={placeholder}  alt='displayPic'/>
-        <img className="w-8 h-8 rounded-3xl border md:ml-[-4px] border-white border-opacity-10" src={placeholder} alt='displayPic'/>
-        <img className="w-8 h-8 rounded-3xl border  md:ml-[-4px]  border-white border-opacity-10" src={placeholder} alt='displayPic'/>
+        <a className='min-w-8 min-h-8 ' href='https://twitter.com/kidha_pelmzy'>
+          
+          <img className="w-8 h-8 rounded-3xl object-cover border  border-white border-opacity-10" src={dp1}  alt='displayPic'/>
+        
+          </a>
+        <a  className='min-w-8 min-h-8 ' href='https://twitter.com/Kokooluwa'>
+          
+          <img className="w-8 h-8 object-cover rounded-3xl border md:ml-[-4px] border-white border-opacity-10" src={dp2} alt='displayPic'/>
+        
+          </a>
+        <a  className='min-w-8 min-h-8 ' href='https://twitter.com/chupabacra'>
+
+          <img className="w-8 h-8 object-cover rounded-3xl border  md:ml-[-4px]  border-white border-opacity-10" src={dp3} alt='displayPic'/>
+          </a>
         </div>
     
     </div>
