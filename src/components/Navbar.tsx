@@ -5,7 +5,7 @@ import dropdown from "../assets/icons/dropdown.svg"
 import { loginEndpoint } from '../utils/spotify'
 import SpotifyWebApi from 'spotify-web-api-js'
 import useScroll from '../customHooks/useScroll'
-
+import defaultDp from "../assets/img/default.png"
 
 
 interface navbarProps {
@@ -19,6 +19,18 @@ interface navbarProps {
 export default function Navbar({user, loggedIn, showDisconnect, toggleDisconnect} : navbarProps) {
  
 const {isHidden, setIsHidden} = useScroll()
+
+const srcImage = () : string=> {
+    if (user?.images) {
+        if (user.images[0].url) {
+          return user.images[0].url
+        }
+        else {
+          return defaultDp
+        }
+    }
+    return defaultDp
+}
 
   return (
 
@@ -44,7 +56,7 @@ const {isHidden, setIsHidden} = useScroll()
                
                 {/* Image container */}
                 <div className=" w-6 h-6  bg-zinc-400 rounded-full shadow" >
-              <img className='w-full h-full  object-cover rounded-[50%] ' alt='' src={user?.images? user.images[0].url : undefined} />
+              <img className='w-full h-full  object-cover rounded-[50%] ' alt='' src={srcImage()} />
             </div>
             <p className=''>
             {user?.display_name}
