@@ -21,13 +21,8 @@ export default function Navbar({user, loggedIn, showDisconnect, toggleDisconnect
 const {isHidden, setIsHidden} = useScroll()
 
 const srcImage = () : string=> {
-    if (user?.images) {
-        if (user.images[0].url) {
-          return user.images[0].url
-        }
-        else {
-          return defaultDp
-        }
+    if (user?.images && user.images[0] && user.images[0].url) {
+        return user.images[0].url
     }
     return defaultDp
 }
