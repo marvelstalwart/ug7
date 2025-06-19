@@ -1,4 +1,4 @@
-# ug7
+# Underground 7
 Discover your daily random collection of curated spotify songs
 
 What it does
